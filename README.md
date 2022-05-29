@@ -2,7 +2,7 @@
 android instagram clone app
 
 
-## stack
+## technology stack
 - Kotlin
 - Hilt
 - Firebase
