@@ -1,5 +1,6 @@
 package com.example.instagram_firebase_clone
 
+import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,6 +10,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.instagram_firebase_clone.ui.theme.Instagram_firebase_cloneTheme
+import dagger.hilt.android.HiltAndroidApp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
