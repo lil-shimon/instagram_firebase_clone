@@ -3,8 +3,9 @@ android instagram clone app
 
 
 ## stack
-- kotlin
-- firebase
-  - firebase authentication
-  - firestore database
-  - storage
+- Kotlin
+- Hilt
+- Firebase
+  - Firebase authentication
+  - Firestore database
+  - Storage
