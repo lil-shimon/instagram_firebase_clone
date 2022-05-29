@@ -38,7 +38,7 @@ class IgViewModel @Inject constructor(
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 signedIn.value = true
-
+                                createOrUpdateProfile(username = username)
                             } else {
                                 handleException(task.exception, "Signup failed")
                             }
@@ -49,9 +49,59 @@ class IgViewModel @Inject constructor(
             .addOnFailureListener {}
     }
 
+    private fun createOrUpdateProfile(
+        name: String? = null,
+        username: String? = null,
+        bio: String? = null,
+        imageUrl: String? = null
+    ) {
+        val uid = auth.currentUser?.uid
+        val userData = UserData(
+            userId = uid,
+            name = name ?: userData.value?.name,
+            username = username ?: userData.value?.username,
+            bio = bio ?: userData.value?.bio,
+            imageUrl = imageUrl ?: userData.value?.imageUrl,
+            following = userData.value?.following
+        )
+
+        // if uid, update
+        uid?.let { uid ->
+            inProgress.value = true
+            db.collection(USERS).document(uid).get()
+                .addOnSuccessListener {
+                    if (it.exists()) {
+                        it.reference.update(userData.toMap())
+                            .addOnSuccessListener {
+                                this.userData.value = userData
+                                inProgress.value = false
+                            }
+                            .addOnFailureListener {
+                                handleException(it, "cannot update user")
+                                inProgress.value = false
+                            }
+                    } else {
+                        // not uid exist -> create
+                        db.collection(USERS).document(uid).set(userData)
+                        // retrieve user data
+                        getUserData(uid)
+                        inProgress.value = false
+                    }
+                }
+                .addOnFailureListener { exc ->
+                    handleException(exc, "cannot create user")
+                    inProgress.value = false
+                }
+        }
+    }
+
+    private fun getUserData(uid: String) {
+
+    }
+
     fun handleException(exception: Exception? = null, customMessage: String = "") {
         exception?.printStackTrace()
-        val errorMsg = exception?.localizedMessage ?:""
+        val errorMsg = exception?.localizedMessage ?: ""
         val message = if (customMessage.isEmpty()) errorMsg else "$customMessage: $errorMsg"
         popupNotification.value = Event(message)
     }
