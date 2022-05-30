@@ -9,6 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.newFixedThreadPoolContext
 import javax.inject.Inject
 
 // collection name
@@ -35,6 +36,11 @@ class IgViewModel @Inject constructor(
     }
 
     fun onSignup(username: String, email: String, pass: String) {
+        if (username.isEmpty() or email.isEmpty() or pass.isEmpty()) {
+            handleException(customMessage = "Please fill in all fields")
+            return
+        }
+
         inProgress.value = true
 
         db.collection(USERS).whereEqualTo("username", username).get()
@@ -56,6 +62,34 @@ class IgViewModel @Inject constructor(
                 }
             }
             .addOnFailureListener {}
+    }
+
+    fun onLogin(email: String, pass: String) {
+        if (email.isEmpty() or pass.isEmpty()) {
+            handleException(customMessage = "Please fill in all fields")
+            return
+        }
+
+        inProgress.value = true
+
+        auth.signInWithEmailAndPassword(email, pass)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    signedIn.value = true
+                    inProgress.value = false
+                    auth.currentUser?.uid?.let { uid ->
+                        handleException(customMessage = "login success")
+                        getUserData(uid)
+                    }
+                } else {
+                    handleException(task.exception, "Login failed")
+                    inProgress.value = false
+                }
+            }
+            .addOnFailureListener { exc ->
+                handleException(exc, "Login failed")
+                inProgress.value = false
+            }
     }
 
     private fun createOrUpdateProfile(

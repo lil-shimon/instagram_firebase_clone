@@ -78,6 +78,7 @@ fun LoginScreen(
             Button(
                 onClick = {
                     focus.clearFocus(force = true)
+                    vm.onLogin(emailState.value.text, passState.value.text)
                 },
                 modifier = Modifier.padding(8.dp)
             ) {
