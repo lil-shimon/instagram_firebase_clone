@@ -4,6 +4,7 @@ android instagram clone app
 
 ## technology stack
 - Kotlin
+  - Jetpack Compose
 - Hilt
 - Firebase
   - Firebase authentication
