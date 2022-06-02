@@ -1,27 +1,108 @@
 package com.example.instagram_firebase_clone.main
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.instagram_firebase_clone.IgViewModel
 
 @Composable
 fun MyPostsScreen(navController: NavController, vm: IgViewModel) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
+    val userData = vm.userData.value
+    val isLoading = vm.inProgress.value
+
+    Column {
         Column(
-            modifier = Modifier
-                .weight(1f)
+            modifier = Modifier.weight(1f)
         ) {
-            Text(text = "My Posts Screen")
+            Row {
+                ProfileImage(userData?.imageUrl) {
+
+                }
+                Text(
+                    text = "15 \n posts",
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = "54 \n followers",
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center
+                )
+
+                Text(
+                    text = "93 \n following",
+                    modifier = Modifier
+                        .weight(1f)
+                        .align(Alignment.CenterVertically),
+                    textAlign = TextAlign.Center
+                )
+            }
+            Column(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                val usernameDisplay = if (userData?.username == null) "" else "@${userData?.username}"
+                Text(
+                    text = userData?.name ?: "",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = usernameDisplay
+                )
+                Text(
+                    text = userData?.bio ?: ""
+                )
+            }
+            OutlinedButton(
+                onClick = {},
+                modifier = Modifier.padding(8.dp)
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Transparent
+                ),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp,
+                    disabledElevation = 0.dp
+                ),
+                shape = RoundedCornerShape(10)
+            ) {
+                Text(
+                    text = "Edit Profile",
+                    color = Color.Black
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Posts lists"
+                )
+            }
         }
+
         BottomNavigationMain(
             selectedItem = BottomNavigationItem.POSTS,
             navController = navController
         )
     }
+}
+
+@Composable
+fun ProfileImage(imageUrl: String?, onClick: () -> Unit) {
+
 }
