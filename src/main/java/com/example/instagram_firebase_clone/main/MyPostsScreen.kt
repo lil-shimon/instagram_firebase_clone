@@ -15,12 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.modifier.ModifierLocalReadScope
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.instagram_firebase_clone.DestinationScreen
 import com.example.instagram_firebase_clone.IgViewModel
 
 @Composable
@@ -76,7 +76,9 @@ fun MyPostsScreen(navController: NavController, vm: IgViewModel) {
                 )
             }
             OutlinedButton(
-                onClick = {},
+                onClick = {
+                    navigateTo(navController, DestinationScreen.Profile)
+                },
                 modifier = Modifier.padding(8.dp)
                     .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
