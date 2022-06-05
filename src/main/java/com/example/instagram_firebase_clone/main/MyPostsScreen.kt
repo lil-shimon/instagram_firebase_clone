@@ -108,6 +108,9 @@ fun MyPostsScreen(navController: NavController, vm: IgViewModel) {
             navController = navController
         )
     }
+
+    if (isLoading)
+        CommonProgressSpinner()
 }
 
 @Composable
