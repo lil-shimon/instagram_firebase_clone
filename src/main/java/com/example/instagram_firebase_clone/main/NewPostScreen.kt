@@ -1,5 +1,6 @@
 package com.example.instagram_firebase_clone.main
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -55,8 +56,9 @@ fun NewPostScreen(navController: NavController, vm: IgViewModel, encodedUri: Str
                 text = "Post",
                 modifier = Modifier.clickable {
                     focusManager.clearFocus()
-
-                    // Call the ViewModel
+                    vm.onNewPost(Uri.parse(imageUri), description) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
