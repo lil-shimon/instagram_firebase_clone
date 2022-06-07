@@ -3,7 +3,6 @@ package com.example.instagram_firebase_clone.auth
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -20,9 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.example.instagram_firebase_clone.DestinationScreen
-import com.example.instagram_firebase_clone.InstagramCloneApplication_HiltComponents.ActivityRetainedC
 import com.example.instagram_firebase_clone.main.CommonImage
 import com.example.instagram_firebase_clone.main.navigateTo
 
