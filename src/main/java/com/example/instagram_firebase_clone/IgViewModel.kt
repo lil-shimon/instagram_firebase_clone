@@ -1,6 +1,7 @@
 package com.example.instagram_firebase_clone
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.instagram_firebase_clone.data.Event
@@ -8,6 +9,7 @@ import com.example.instagram_firebase_clone.data.PostData
 import com.example.instagram_firebase_clone.data.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,6 +31,9 @@ class IgViewModel @Inject constructor(
     val inProgress = mutableStateOf(false)
     val userData = mutableStateOf<UserData?>(null)
     val popupNotification = mutableStateOf<Event<String>?>(null)
+
+    val refreshPostsProgress = mutableStateOf(false)
+    val posts = mutableStateOf<List<PostData>>(listOf())
 
     init {
         val currentUser = auth.currentUser
@@ -147,6 +152,7 @@ class IgViewModel @Inject constructor(
                 val user = it.toObject<UserData>()
                 userData.value = user
                 inProgress.value = false
+                refreshPosts()
             }
             .addOnFailureListener { exc ->
                 handleException(exc, "Cannot retrieve user data")
@@ -240,9 +246,10 @@ class IgViewModel @Inject constructor(
                 .addOnSuccessListener {
                     popupNotification.value = Event("Post successfully created")
                     inProgress.value = false
+                    refreshPosts()
                     onPostSuccess.invoke()
                 }
-                .addOnFailureListener{ exc ->
+                .addOnFailureListener { exc ->
                     handleException(exc, "Unable to create post")
                     inProgress.value = false
                 }
@@ -251,5 +258,45 @@ class IgViewModel @Inject constructor(
             onLogout()
             inProgress.value = false
         }
+    }
+
+    /**
+     * Refresh posts
+     *
+     */
+    private fun refreshPosts() {
+        val currentUid = auth.currentUser?.uid
+        if (currentUid != null) {
+            refreshPostsProgress.value = true
+            db.collection(POSTS)
+                .whereEqualTo("userId", currentUid).get()
+                .addOnSuccessListener { documents ->
+                    convertPosts(documents, posts)
+                    refreshPostsProgress.value = false
+                }
+                .addOnFailureListener { exc ->
+                    handleException(exc, "Cannot fetch posts")
+                    refreshPostsProgress.value = false
+                }
+        } else {
+            handleException(customMessage = "Error: username unavailable. Unable to refresh post")
+            onLogout()
+        }
+    }
+
+    /**
+     * Convert posts from documents to state
+     *
+     * @param documents
+     * @param outState
+     */
+    private fun convertPosts(documents: QuerySnapshot, outState: MutableState<List<PostData>>) {
+        val newPosts = mutableListOf<PostData>()
+        documents.forEach { doc ->
+            val post = doc.toObject<PostData>()
+            newPosts.add(post)
+        }
+        val sortedPosts = newPosts.sortedByDescending { it.time }
+        outState.value = sortedPosts
     }
 }
